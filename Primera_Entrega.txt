@@ -1,0 +1,537 @@
+1. ¿Cuál fue la especialidad más solicitada en el 2016?
+SELECT Ano, upper(Especialidad), count('Especialidad') AS Cantidad FROM `trabajofinalanalitica.Entrega1.Cobertura2016` 
+GROUP BY Ano, upper(Especialidad)
+ORDER BY count(Especialidad) DESC
+LIMIT 1
+____________________________________________________________________________________________________________________________
+2. ¿Cuál ha sido la especialidad más solicitada en los últimos 3 años y su respectiva provincia?
+WITH Espe_2018 AS 
+(
+SELECT t1.Provincia AS Nombre_Provincia, lower(t1.Especialidad) AS Especialidad_2018 , count(t1.Especialidad) AS Cantidad_Especialidad_2018 FROM `trabajofinalanalitica.Entrega1.Cobertura2018` t1
+GROUP BY t1.Provincia, t1.Especialidad
+ORDER BY count(t1.Especialidad) DESC
+LIMIT 1
+)
+,
+Espe_2019 AS 
+(
+SELECT t1.Provincia AS Nombre_Provincia, t1.Especialidad AS Especialidad_2019 , count(t1.Especialidad) AS Cantidad_Especialidad_2019 FROM `trabajofinalanalitica.Entrega1.Cobertura2019` t1
+GROUP BY t1.Provincia, t1.Especialidad
+ORDER BY count(t1.Especialidad) DESC
+LIMIT 1
+)
+,
+Espe_2020 AS 
+(
+SELECT t1.Provincia AS Nombre_Provincia, t1.Especialidad AS Especialidad_2020 , count(t1.Especialidad) AS Cantidad_Especialidad_2020 FROM `trabajofinalanalitica.Entrega1.Cobertura2020` t1
+GROUP BY t1.Provincia, t1.Especialidad
+ORDER BY count(t1.Especialidad) DESC
+LIMIT 1
+)
+SELECT t4.Nombre_Provincia, t4.Especialidad_2018, t4.Cantidad_Especialidad_2018, t5.Nombre_Provincia, t5.Especialidad_2019, t5.Cantidad_Especialidad_2019, t6.Nombre_Provincia, t6.Especialidad_2020, t6.Cantidad_Especialidad_2020,
+FROM Espe_2018 t1
+INNER JOIN Espe_2018 t4 ON t4.Nombre_Provincia = t1.Nombre_Provincia
+INNER JOIN Espe_2019 t5 ON t5.Nombre_Provincia = t1.Nombre_Provincia
+INNER JOIN Espe_2020 t6 ON t6.Nombre_Provincia = t1.Nombre_Provincia
+
+____________________________________________________________________________________________________________________________
+3. ¿Cuál es la provincia con mayor cantidad de servicios en los primeros 3 años de análisis?
+DROP TABLE IF EXISTS trabajofinalanalitica.Entrega1.Prov_2015;
+CREATE TABLE trabajofinalanalitica.Entrega1.Prov_2015 AS
+SELECT t1.Ano, t1.Provincia, max(t1.Cantidad_servicios) AS Max_Cant_Serv FROM `trabajofinalanalitica.Entrega1.Cobertura2015` t1
+GROUP BY t1.Ano, t1.Provincia
+ORDER BY max(t1.Cantidad_servicios) DESC
+LIMIT 1;
+
+DROP TABLE IF EXISTS trabajofinalanalitica.Entrega1.Prov_2016;
+CREATE TABLE trabajofinalanalitica.Entrega1.Prov_2016 AS
+SELECT t1.Ano, t1.Provincia, max(t1.Cantidad_servicios) AS Max_Cant_Serv FROM `trabajofinalanalitica.Entrega1.Cobertura2016` t1
+WHERE Provincia <> 'No Especificada'
+GROUP BY t1.Ano, t1.Provincia
+ORDER BY max(t1.Cantidad_servicios) DESC
+LIMIT 1;
+
+
+DROP TABLE IF EXISTS trabajofinalanalitica.Entrega1.Prov_2017;
+CREATE TABLE trabajofinalanalitica.Entrega1.Prov_2017 AS
+SELECT t1.Ano, t1.Provincia, max(t1.Cantidad_servicios) AS Max_Cant_Serv FROM `trabajofinalanalitica.Entrega1.Cobertura2017` t1
+GROUP BY t1.Ano, t1.Provincia
+ORDER BY max(t1.Cantidad_servicios) DESC
+LIMIT 1;
+
+SELECT t1.Ano, t1.Provincia, t1.Max_Cant_Serv FROM trabajofinalanalitica.Entrega1.Prov_2015 t1
+UNION ALL
+SELECT t1.Ano, t1.Provincia, t1.Max_Cant_Serv FROM trabajofinalanalitica.Entrega1.Prov_2016 t1
+UNION ALL
+SELECT t1.Ano, t1.Provincia, t1.Max_Cant_Serv FROM trabajofinalanalitica.Entrega1.Prov_2017 t1
+_____________________________________________________________________________________________________________________________
+4. ¿Cuál es la provincia con menor cantidad de servicios en  los primeros 3 años de análisis?
+DROP TABLE IF EXISTS trabajofinalanalitica.Entrega1.Prov_2015;
+CREATE TABLE trabajofinalanalitica.Entrega1.Prov_2015 AS
+SELECT t1.Ano, t1.Provincia, min(t1.Cantidad_servicios) AS Min_Cant_Serv FROM `trabajofinalanalitica.Entrega1.Cobertura2015` t1
+GROUP BY t1.Ano, t1.Provincia
+ORDER BY min(t1.Cantidad_servicios) DESC
+LIMIT 1;
+
+DROP TABLE IF EXISTS trabajofinalanalitica.Entrega1.Prov_2016;
+CREATE TABLE trabajofinalanalitica.Entrega1.Prov_2016 AS
+SELECT t1.Ano, t1.Provincia, min(t1.Cantidad_servicios) AS Min_Cant_Serv FROM `trabajofinalanalitica.Entrega1.Cobertura2016` t1
+WHERE Provincia <> 'No Especificada'
+GROUP BY t1.Ano, t1.Provincia
+ORDER BY min(t1.Cantidad_servicios) DESC
+LIMIT 1;
+
+
+DROP TABLE IF EXISTS trabajofinalanalitica.Entrega1.Prov_2017;
+CREATE TABLE trabajofinalanalitica.Entrega1.Prov_2017 AS
+SELECT t1.Ano, t1.Provincia, min(t1.Cantidad_servicios) AS Min_Cant_Serv FROM `trabajofinalanalitica.Entrega1.Cobertura2017` t1
+GROUP BY t1.Ano, t1.Provincia
+ORDER BY min(t1.Cantidad_servicios) DESC
+LIMIT 1;
+
+SELECT t1.Ano, t1.Provincia, t1.Min_Cant_Serv FROM trabajofinalanalitica.Entrega1.Prov_2015 t1
+UNION ALL
+SELECT t1.Ano, t1.Provincia, t1.Min_Cant_Serv FROM trabajofinalanalitica.Entrega1.Prov_2016 t1
+UNION ALL
+SELECT t1.Ano, t1.Provincia, t1.Min_Cant_Serv FROM trabajofinalanalitica.Entrega1.Prov_2017 t1
+_____________________________________________________________________________________________________________________________
+
+5. ¿Cuáles especialidades, en 2018, tenían un valor autorizado entre 1000 y 2500 RD$?
+SELECT t1.Especialidad, t1.Valor_Autorizado__RD__ FROM `trabajofinalanalitica.Entrega1.Cobertura2018` t1
+WHERE t1.Valor_Autorizado__RD__ BETWEEN 1000 AND 2500
+____________________________________________________________________________________________________________________________
+6. ¿En el año 2015 cuál fue el mes en el que más servicios se prestaron?
+SELECT t1.Ano, t1.Mes, count(t1.Cantidad_Servicios) AS Total_Sevicio_Mes FROM `trabajofinalanalitica.Entrega1.Cobertura2015` t1
+GROUP BY t1.Mes, t1.Ano
+ORDER BY count(t1.Cantidad_Servicios) DESC
+LIMIT 1
+_____________________________________________________________________________________________________________________________
+7. ¿En el año 2020 cuál fue el mes en el que más servicios se prestaron?
+SELECT t1.Ano, t1.Mes, count(t1.Cantidad_Servicios) AS Total_Sevicio_Mes FROM `trabajofinalanalitica.Entrega1.Cobertura2020` t1
+GROUP BY t1.Ano, t1.Mes
+ORDER BY count(t1.Cantidad_Servicios) DESC
+LIMIT 1
+_____________________________________________________________________________________________________________________________
+8. ¿Cuál de los últimos 3 años fue en el que hubo mayor cantidad de población usuaria?
+WITH Pobla_Usu_2018 AS
+(
+SELECT t1.Ano, t1.Provincia, sum(t1.Poblacion_usuaria) AS Cant_Pobla_Usu FROM `trabajofinalanalitica.Entrega1.Cobertura2018` t1
+GROUP BY t1.Ano, t1.Provincia
+ORDER BY sum(t1.Poblacion_usuaria) DESC
+LIMIT 1
+)
+,
+Pobla_Usu_2019 AS
+(
+SELECT t1.Ano, t1.Provincia,sum(t1.Poblacion_usuaria) FROM `trabajofinalanalitica.Entrega1.Cobertura2019` t1
+GROUP BY t1.Ano, t1.Provincia
+ORDER BY sum(t1.Poblacion_usuaria) DESC
+LIMIT 1
+)
+,
+Pobla_Usu_2020 AS
+(
+SELECT t1.Ano, t1.Provincia, sum(t1.Poblacion_usuaria) FROM `trabajofinalanalitica.Entrega1.Cobertura2020` t1
+GROUP BY t1.Ano, t1.Provincia
+ORDER BY sum(t1.Poblacion_usuaria) DESC
+LIMIT 1
+)
+SELECT * FROM Pobla_Usu_2018
+UNION ALL
+SELECT * FROM Pobla_Usu_2019
+UNION ALL
+SELECT * FROM Pobla_Usu_2020
+ORDER BY Ano ASC
+_____________________________________________________________________________________________________________________________
+_____________________________________________________________________________________________________________________________
+9. ¿Cuáles son las 5 especialidades menos solicitadas por la población usuaria en el último año?
+SELECT t1.Especialidad, min(t1.Poblacion_usuaria ) FROM `trabajofinalanalitica.Entrega1.Cobertura2020` t1
+WHERE t1.Especialidad <> 'Desconocida'
+GROUP BY t1.Especialidad
+LIMIT 5
+_____________________________________________________________________________________________________________________________
+10. Mostrar 10 especialidades con su respectiva población usuaria de los años 2019 y 2020
+WITH Pobla_Usu2019 AS
+(
+SELECT t1.Especialidad, count(t1.Poblacion_Usuaria) AS Poblacion_Usuaria_2019 FROM `trabajofinalanalitica.Entrega1.Cobertura2019` t1
+GROUP BY t1.Especialidad
+ORDER BY count(t1.Poblacion_Usuaria) DESC
+)
+,
+Pobla_Usu2020 AS
+(
+SELECT t1.Especialidad, count(t1.Poblacion_Usuaria) AS Poblacion_Usuaria_2020 FROM `trabajofinalanalitica.Entrega1.Cobertura2020` t1
+GROUP BY t1.Especialidad
+ORDER BY count(t1.Poblacion_Usuaria) DESC
+)
+SELECT * FROM Pobla_Usu2019 t1
+INNER JOIN Pobla_Usu2020 t2 ON t1.Especialidad = t2.Especialidad
+LIMIT 10
+
+_____________________________________________________________________________________________________________________________
+11. ¿Cuál es el promedio de la cantidad de servicios prestados en cada año, y el promedio de la población que accede a los servicios
+WITH Prom_ServiPres_2015 AS
+(
+SELECT t1.Ano, round(AVG(t1.Cantidad_servicios ),5) AS Prom_ServiPrestado FROM `trabajofinalanalitica.Entrega1.Cobertura2015` t1
+GROUP BY t1.Ano
+ORDER BY AVG(t1.Poblacion_usuaria) DESC
+LIMIT 1
+)
+,Prom_ServiPres_2016 AS
+(
+SELECT t1.Ano, round(AVG(t1.Cantidad_servicios),2) AS Prom_ServiPrestado FROM `trabajofinalanalitica.Entrega1.Cobertura2016` t1
+GROUP BY t1.Ano
+ORDER BY AVG(t1.Poblacion_usuaria) DESC
+LIMIT 1
+)
+,
+Prom_ServiPres_2017 AS
+(
+SELECT t1.Ano, round(AVG(t1.Cantidad_servicios),2) AS Prom_ServiPrestado FROM `trabajofinalanalitica.Entrega1.Cobertura2017` t1
+GROUP BY t1.Ano
+ORDER BY AVG(t1.Poblacion_usuaria) DESC
+LIMIT 1
+)
+,
+Prom_ServiPres_2018 AS
+(
+SELECT t1.Ano, round(AVG(t1.Cantidad_servicios),2) AS Prom_ServiPrestado FROM `trabajofinalanalitica.Entrega1.Cobertura2018` t1
+GROUP BY t1.Ano
+ORDER BY AVG(t1.Poblacion_usuaria) DESC
+LIMIT 1
+)
+,
+Prom_ServiPres_2019 AS
+(
+SELECT t1.Ano, round(AVG(t1.Cantidad_servicios),2) FROM `trabajofinalanalitica.Entrega1.Cobertura2019` t1
+GROUP BY t1.Ano
+ORDER BY AVG(t1.Poblacion_usuaria) DESC
+LIMIT 1
+)
+,
+Prom_ServiPres_2020 AS
+(
+SELECT t1.Ano, round(AVG(t1.Cantidad_servicios),2) FROM `trabajofinalanalitica.Entrega1.Cobertura2020` t1
+GROUP BY t1.Ano
+ORDER BY AVG(t1.Poblacion_usuaria) DESC
+LIMIT 1
+)
+SELECT * FROM Prom_ServiPres_2015
+UNION ALL
+SELECT * FROM Prom_ServiPres_2016
+UNION ALL
+SELECT * FROM Prom_ServiPres_2017
+UNION ALL
+SELECT * FROM Prom_ServiPres_2018
+UNION ALL
+SELECT * FROM Prom_ServiPres_2019
+UNION ALL
+SELECT * FROM Prom_ServiPres_2020
+ORDER BY Ano ASC
+
+_____________________________________________________________________________________________________________________________
+12. ¿Cuál es el año en el que mayor valor autorizado se ha tenido?
+WITH Espec_2018 AS
+(
+SELECT t1.Ano, t1.Especialidad, round(max(t1.Valor_Autorizado__RD__ ),2) AS Valor_Max FROM `trabajofinalanalitica.Entrega1.Cobertura2018` t1
+GROUP BY t1.Ano, t1.Especialidad
+ORDER BY max(t1.Valor_Autorizado__RD__ ) DESC
+LIMIT 1
+)
+,
+Espec_2019 AS
+(
+SELECT t1.Ano, t1.Especialidad, round(max(t1.Valor_Autorizado__RD__ ),2) AS Valor_Max FROM `trabajofinalanalitica.Entrega1.Cobertura2019` t1
+GROUP BY t1.Ano, t1.Especialidad
+ORDER BY max(t1.Valor_Autorizado__RD__ ) DESC
+LIMIT 1
+)
+,
+Espec_2020 AS
+(
+SELECT t1.Ano, t1.Especialidad, round(max(t1.Valor_Autorizado__RD__ ),2) AS Valor_Max FROM `trabajofinalanalitica.Entrega1.Cobertura2020` t1
+GROUP BY t1.Ano, t1.Especialidad
+ORDER BY max(t1.Valor_Autorizado__RD__ ) DESC
+LIMIT 1
+)
+SELECT t1.Ano FROM Espec_2018 t1
+UNION ALL 
+SELECT t1.Ano FROM Espec_2019 t1
+UNION ALL 
+SELECT t1.Ano FROM Espec_2020 t1
+ORDER BY Ano DESC
+LIMIT 1
+____________________________________________________________________________________________________________________________
+13. ¿Cuál es el sistema más usado por año?
+WITH Sist_2015 AS
+(
+SELECT t1.Ano, t1.Sistema, count(t1.Sistema) AS Cantidad_Sistema FROM `trabajofinalanalitica.Entrega1.Cobertura2015` t1
+GROUP BY t1.Ano, t1.Sistema
+ORDER BY count(t1.Sistema) DESC
+LIMIT 1
+)
+,
+Sist_2016 AS
+(SELECT t1.Ano, t1.Sistema, count(t1.Sistema) AS Cantidad_Sistema FROM `trabajofinalanalitica.Entrega1.Cobertura2016` t1
+GROUP BY t1.Ano, t1.Sistema
+ORDER BY count(t1.Sistema) DESC
+LIMIT 1
+)
+,
+Sist_2017 AS
+(SELECT t1.Ano, t1.Sistema, count(t1.Sistema) AS Cantidad_Sistema FROM `trabajofinalanalitica.Entrega1.Cobertura2017` t1
+GROUP BY t1.Ano, t1.Sistema
+ORDER BY count(t1.Sistema) DESC
+LIMIT 1
+)
+,
+Sist_2018 AS
+(SELECT t1.Ano, t1.Sistema, count(t1.Sistema) AS Cantidad_Sistema FROM `trabajofinalanalitica.Entrega1.Cobertura2018` t1
+GROUP BY t1.Ano, t1.Sistema
+ORDER BY count(t1.Sistema) DESC
+LIMIT 1
+)
+,
+Sist_2019 AS
+(SELECT t1.Ano, t1.Sistema, count(t1.Sistema) AS Cantidad_Sistema FROM `trabajofinalanalitica.Entrega1.Cobertura2019` t1
+GROUP BY t1.Ano, t1.Sistema
+ORDER BY count(t1.Sistema) DESC
+LIMIT 1
+)
+,
+Sist_2020 AS
+(
+SELECT t1.Ano, t1.sistemas, count(t1.sistemas) AS Cantidad_Sistema FROM `trabajofinalanalitica.Entrega1.Cobertura2020` t1
+GROUP BY t1.Ano, t1.sistemas
+ORDER BY count(t1.sistemas) DESC
+LIMIT 1
+)
+
+SELECT t1.Ano, t1.Sistema, t1.Cantidad_Sistema FROM Sist_2015 t1
+UNION ALL 
+SELECT t1.Ano, t1.Sistema, t1.Cantidad_Sistema FROM Sist_2016 t1
+UNION ALL 
+SELECT t1.Ano, t1.Sistema, t1.Cantidad_Sistema FROM Sist_2017 t1
+UNION ALL 
+SELECT t1.Ano, t1.Sistema, t1.Cantidad_Sistema FROM Sist_2018 t1
+UNION ALL 
+SELECT t1.Ano, t1.Sistema, t1.Cantidad_Sistema FROM Sist_2019 t1
+UNION ALL 
+SELECT t1.Ano, t1.sistemas, t1.Cantidad_Sistema FROM Sist_2020 t1
+ORDER BY Ano DESC
+
+____________________________________________________________________________________________________________________________
+14. Mostrar los valores de la población usuaria que está en el 2019 pero no en el 2020 por provincia
+WITH Pobla_Usu_2019 AS
+(
+SELECT t1.Ano, t1.Provincia, count(t1.Poblacion_usuaria) AS Poblacion_Usuaria FROM `trabajofinalanalitica.Entrega1.Cobertura2019` t1
+GROUP BY t1.Ano, t1.Provincia
+)
+,
+Pobla_Usu_2020 AS
+(
+SELECT t1.Ano, t1.Provincia, count(t1.Poblacion_usuaria) FROM `trabajofinalanalitica.Entrega1.Cobertura2020` t1
+GROUP BY t1.Ano, t1.Provincia
+)
+
+SELECT * FROM Pobla_Usu_2019
+EXCEPT DISTINCT 
+SELECT * FROM Pobla_Usu_2020
+_____________________________________________________________________________________________________________________________
+15. ¿Cuál es la población usuario del año 2015 respecto al 2016?
+SELECT t1.Ano, count(t1.Poblacion_usuaria) AS Poblacion_Usuaria FROM `trabajofinalanalitica.Entrega1.Cobertura2015` t1
+LEFT JOIN `trabajofinalanalitica.Entrega1.Cobertura2016` t2 ON t1.Ano = t2.Ano
+GROUP BY t1.Ano
+
+FIN
+_____________________________________________________________________________________________________________________________
+_____________________________________________________________________________________________________________________________
+--Promedio de la población usuario por año
+WITH Prom_Usu_2015 AS
+(
+SELECT t1.Ano, round(AVG(t1.Poblacion_usuaria),2) AS Promedio_Poblacion_Usuaria FROM `trabajofinalanalitica.Entrega1.Cobertura2015` t1
+GROUP BY t1.Ano
+)
+,
+Prom_Usu_2016 AS
+(
+SELECT t1.Ano, round(AVG(t1.Poblacion_usuaria),2) AS Promedio_Poblacion_Usuaria FROM `trabajofinalanalitica.Entrega1.Cobertura2016` t1
+GROUP BY t1.Ano
+)
+,
+Prom_Usu_2017 AS
+(
+SELECT t1.Ano, round(AVG(t1.Poblacion_usuaria),2) AS Promedio_Poblacion_Usuaria FROM `trabajofinalanalitica.Entrega1.Cobertura2017` t1
+GROUP BY t1.Ano
+)
+,
+Prom_Usu_2018 AS
+(
+SELECT t1.Ano, round(AVG(t1.Poblacion_usuaria),2) AS Promedio_Poblacion_Usuaria FROM `trabajofinalanalitica.Entrega1.Cobertura2018` t1
+GROUP BY t1.Ano
+)
+,
+Prom_Usu_2019 AS
+(
+SELECT t1.Ano, round(AVG(t1.Poblacion_usuaria),2) AS Promedio_Poblacion_Usuaria FROM `trabajofinalanalitica.Entrega1.Cobertura2019` t1
+GROUP BY t1.Ano
+)
+,
+Prom_Usu_2020 AS
+(
+SELECT t1.Ano, round(AVG(t1.Poblacion_usuaria),2) AS Promedio_Poblacion_Usuaria FROM `trabajofinalanalitica.Entrega1.Cobertura2020` t1
+GROUP BY t1.Ano
+)
+SELECT t1.Ano, t1.Promedio_Poblacion_Usuaria FROM Prom_Usu_2015 t1
+UNION ALL 
+SELECT t1.Ano, t1.Promedio_Poblacion_Usuaria FROM Prom_Usu_2016 t1
+UNION ALL 
+SELECT t1.Ano, t1.Promedio_Poblacion_Usuaria FROM Prom_Usu_2017 t1
+UNION ALL 
+SELECT t1.Ano, t1.Promedio_Poblacion_Usuaria FROM Prom_Usu_2018 t1
+UNION ALL 
+SELECT t1.Ano, t1.Promedio_Poblacion_Usuaria FROM Prom_Usu_2019 t1
+UNION ALL 
+SELECT t1.Ano, t1.Promedio_Poblacion_Usuaria FROM Prom_Usu_2020 t1
+ORDER BY Ano DESC
+
+____________________________________________________________________________________________________________________________
+--¿Cuál es la especialidad que mayor valor autorizado tiene en cada año?
+WITH Espec_2018 AS
+(
+SELECT t1.Ano, t1.Especialidad, round(max(t1.Valor_Autorizado__RD__ ),2) AS Valor_Max FROM `trabajofinalanalitica.Entrega1.Cobertura2018` t1
+GROUP BY t1.Ano, t1.Especialidad
+ORDER BY max(t1.Valor_Autorizado__RD__ ) DESC
+LIMIT 1
+)
+,
+Espec_2019 AS
+(
+SELECT t1.Ano, t1.Especialidad, round(max(t1.Valor_Autorizado__RD__ ),2) AS Valor_Max FROM `trabajofinalanalitica.Entrega1.Cobertura2019` t1
+GROUP BY t1.Ano, t1.Especialidad
+ORDER BY max(t1.Valor_Autorizado__RD__ ) DESC
+LIMIT 1
+)
+,
+Espec_2020 AS
+(
+SELECT t1.Ano, t1.Especialidad, round(max(t1.Valor_Autorizado__RD__ ),2) AS Valor_Max FROM `trabajofinalanalitica.Entrega1.Cobertura2020` t1
+GROUP BY t1.Ano, t1.Especialidad
+ORDER BY max(t1.Valor_Autorizado__RD__ ) DESC
+LIMIT 1
+)
+SELECT t1.Ano, t1.Especialidad, t1.Valor_Max FROM Espec_2018 t1
+UNION ALL 
+SELECT t1.Ano, t1.Especialidad, t1.Valor_Max FROM Espec_2019 t1
+UNION ALL 
+SELECT t1.Ano, t1.Especialidad, t1.Valor_Max FROM Espec_2020 t1
+ORDER BY Ano DESC
+
+_____________________________________________________________________________________________________________________________
+--¿Cuál es el valor promedio de la población usuaria en cada año?
+WITH Prom_PoblaUsu_2015 AS
+(
+SELECT t1.Ano, round(AVG(t1.Poblacion_usuaria),2) AS Prom_Cant_Pobla_Usu FROM `trabajofinalanalitica.Entrega1.Cobertura2015` t1
+GROUP BY t1.Ano
+ORDER BY AVG(t1.Poblacion_usuaria) DESC
+LIMIT 1
+)
+,Prom_PoblaUsu_2016 AS
+(
+SELECT t1.Ano, round(AVG(t1.Poblacion_usuaria),2) AS Prom_Cant_Pobla_Usu FROM `trabajofinalanalitica.Entrega1.Cobertura2016` t1
+GROUP BY t1.Ano
+ORDER BY AVG(t1.Poblacion_usuaria) DESC	
+LIMIT 1
+)
+,
+Prom_PoblaUsu_2017 AS
+(
+SELECT t1.Ano, round(AVG(t1.Poblacion_usuaria),2) AS Prom_Cant_Pobla_Usu FROM `trabajofinalanalitica.Entrega1.Cobertura2017` t1
+GROUP BY t1.Ano
+ORDER BY AVG(t1.Poblacion_usuaria) DESC
+LIMIT 1
+)
+,
+Prom_PoblaUsu_2018 AS
+(
+SELECT t1.Ano, round(AVG(t1.Poblacion_usuaria),2) FROM `trabajofinalanalitica.Entrega1.Cobertura2018` t1
+GROUP BY t1.Ano
+ORDER BY AVG(t1.Poblacion_usuaria) DESC
+LIMIT 1
+)
+,
+Prom_PoblaUsu_2019 AS
+(
+SELECT t1.Ano, round(AVG(t1.Poblacion_usuaria),2) FROM `trabajofinalanalitica.Entrega1.Cobertura2019` t1
+GROUP BY t1.Ano
+ORDER BY AVG(t1.Poblacion_usuaria) DESC
+LIMIT 1
+)
+,
+Prom_PoblaUsu_2020 AS
+(
+SELECT t1.Ano, round(AVG(t1.Poblacion_usuaria),2) FROM `trabajofinalanalitica.Entrega1.Cobertura2020` t1
+GROUP BY t1.Ano
+ORDER BY AVG(t1.Poblacion_usuaria) DESC
+LIMIT 1
+)SELECT * FROM Prom_PoblaUsu_2015
+UNION ALL
+SELECT * FROM Prom_PoblaUsu_2016
+UNION ALL
+SELECT * FROM Prom_PoblaUsu_2017
+UNION ALL
+SELECT * FROM Prom_PoblaUsu_2018
+UNION ALL
+SELECT * FROM Prom_PoblaUsu_2019
+UNION ALL
+SELECT * FROM Prom_PoblaUsu_2020
+
+_____________________________________________________________________________________________________________________________
+--Cantidad de servicios que no fueron utilizados por los usuarios por año
+WITH Prom_PoblaUsu_2015 AS
+(
+SELECT t1.Ano, sum(t1.Poblacion_usuaria) AS Sum_Poblac_Usua, sum(t1.Cantidad_servicios) AS Sum_Cant_Serv FROM `trabajofinalanalitica.Entrega1.Cobertura2015` t1
+GROUP BY t1.Ano
+)
+,Prom_PoblaUsu_2016 AS
+(
+SELECT t1.Ano, sum(t1.Poblacion_usuaria) AS Sum_Poblac_Usua, sum(t1.Cantidad_servicios) AS Sum_Cant_Serv FROM `trabajofinalanalitica.Entrega1.Cobertura2016` t1
+GROUP BY t1.Ano
+)
+,
+Prom_PoblaUsu_2017 AS
+(
+SELECT t1.Ano, sum(t1.Poblacion_usuaria) AS Sum_Poblac_Usua, sum(t1.Cantidad_servicios) AS Sum_Cant_Serv FROM `trabajofinalanalitica.Entrega1.Cobertura2017` t1
+GROUP BY t1.Ano
+)
+,
+Prom_PoblaUsu_2018 AS
+(
+SELECT t1.Ano, sum(t1.Poblacion_usuaria) AS Sum_Poblac_Usua, sum(t1.Cantidad_servicios) AS Sum_Cant_Serv FROM `trabajofinalanalitica.Entrega1.Cobertura2018` t1
+GROUP BY t1.Ano
+ORDER BY AVG(t1.Poblacion_usuaria) DESC
+)
+,
+Prom_PoblaUsu_2019 AS
+(
+SELECT t1.Ano, sum(t1.Poblacion_usuaria) AS Sum_Poblac_Usua, sum(t1.Cantidad_servicios) AS Sum_Cant_Serv FROM `trabajofinalanalitica.Entrega1.Cobertura2019` t1
+GROUP BY t1.Ano
+)
+,
+Prom_PoblaUsu_2020 AS
+(
+SELECT t1.Ano, sum(t1.Poblacion_usuaria) AS Sum_Poblac_Usua, sum(t1.Cantidad_servicios) AS Sum_Cant_Serv FROM `trabajofinalanalitica.Entrega1.Cobertura2020` t1
+GROUP BY t1.Ano
+)
+SELECT Ano, round((Sum_Cant_Serv-Sum_Poblac_Usua)/Sum_Cant_Serv,1)*100 AS Porcentaje_Personas_No_Acceden_Servicios FROM Prom_PoblaUsu_2015
+UNION ALL
+SELECT Ano, round((Sum_Cant_Serv-Sum_Poblac_Usua)/Sum_Cant_Serv,2)*100 FROM Prom_PoblaUsu_2016
+UNION ALL
+SELECT Ano, round((Sum_Cant_Serv-Sum_Poblac_Usua)/Sum_Cant_Serv,2)*100 FROM Prom_PoblaUsu_2017
+UNION ALL
+SELECT Ano, round((Sum_Cant_Serv-Sum_Poblac_Usua)/Sum_Cant_Serv,2)*100 FROM Prom_PoblaUsu_2018
+UNION ALL
+SELECT Ano, round((Sum_Cant_Serv-Sum_Poblac_Usua)/Sum_Cant_Serv,2)*100 FROM Prom_PoblaUsu_2019
+UNION ALL
+SELECT Ano, round((Sum_Cant_Serv-Sum_Poblac_Usua)/Sum_Cant_Serv,2)*100 FROM Prom_PoblaUsu_2020
+ORDER BY Ano DESC
